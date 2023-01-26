@@ -1,22 +1,26 @@
 import React from 'react';
-import {Routes, Route} from "react-router-dom";
-import Album from "./components/Album";
-import ChatRoom from "./components/ChatRoom";
-import LandingPage from "./pages/LandingPage";
+import { Route, Routes } from 'react-router-dom';
+import MiraiClientContext from './components/context/MiraiClientContext';
+import LandingPage from './pages/LandingPage';
+import { MiraiClient } from './logic/MiraiHibernateClient';
+import './index.css';
+import UserConfigContext from './components/context/UserConfigContext';
+import UserConfigManager from './logic/UserConfigManager';
+import ConfigPage from './pages/ConfigPage';
 
 function App() {
-    return (
-        <div className="App">
-            <Routes>
-                <Route path={'/'} element={<LandingPage />} />
-            </Routes>
-            {/*<Routes>*/}
-            {/*    <Route path="/" element={<ChatRoom />} />*/}
-            {/*    <Route path="/face" element={<Album />} />*/}
-            {/*    <Route path="/message" element={<ChatRoom />} />*/}
-            {/*</Routes>*/}
-        </div>
-    );
+	return (
+		<UserConfigContext.Provider value={UserConfigManager}>
+			<MiraiClientContext.Provider value={MiraiClient}>
+				<div className="App">
+					<Routes>
+						<Route path={'/'} element={<LandingPage/>}/>
+						<Route path={'/config'} element={<ConfigPage/>}/>
+					</Routes>
+				</div>
+			</MiraiClientContext.Provider>
+		</UserConfigContext.Provider>
+	);
 }
 
 export default App;

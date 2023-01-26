@@ -1,11 +1,15 @@
-import {MessageFilterOptions, MessageRecord} from "../types";
+import { MessageFilterOptions, MessageRecord } from '../types';
+import env from 'react-dotenv';
+import { MockMiraiHibernateClient } from './client/MockMiraiHibernateClient';
+import { RealMiraiHibernateClient } from './client/RealMiraiHibernateClient';
+import AccountInfo from './model/AccountInfo';
 
 export interface MiraiHibernateClient {
-    fetchBots(): Promise<Array<number>>;
+    fetchBots(): Promise<Array<AccountInfo>>;
 
     fetchGroups(bot: number): Promise<Array<number>>;
 
-    fetchUsers(bot: number): Promise<Array<number>>;
+    fetchUsers(bot: number): Promise<Array<AccountInfo>>;
 
     fetchMessages(filter: MessageFilterOptions): Promise<Array<MessageRecord>>;
 
@@ -19,3 +23,5 @@ export interface MiraiHibernateClient {
 
     removeSticker(hash: string): Promise<null>;
 }
+
+export const MiraiClient = env.STATUS === 'dev' ? new MockMiraiHibernateClient() : new RealMiraiHibernateClient();
