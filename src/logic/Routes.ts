@@ -59,3 +59,9 @@ export async function fetchMessages(filter: MessageFilterOptions): Promise<Array
 
 	return [];
 }
+
+export async function fetchBotList(): Promise<Array<number>> {
+	const response = await fetch('/archive/bot');
+
+	return [];
+}
