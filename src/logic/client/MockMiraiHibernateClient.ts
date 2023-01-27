@@ -1,6 +1,7 @@
 import { MiraiHibernateClient } from '../MiraiHibernateClient';
 import { MessageFilterOptions, MessageRecord } from '../../types';
 import AccountInfo from '../model/AccountInfo';
+import { GroupInfo } from '../model/GroupInfo';
 
 export class MockMiraiHibernateClient implements MiraiHibernateClient {
 	addTagToSticker(stickerHash: string, tag: string): Promise<null> {
@@ -16,7 +17,7 @@ export class MockMiraiHibernateClient implements MiraiHibernateClient {
 		]);
 	}
 
-	fetchGroups(bot: number): Promise<Array<number>> {
+	fetchGroups(bot: number): Promise<Array<GroupInfo>> {
 		return Promise.resolve([]);
 	}
 

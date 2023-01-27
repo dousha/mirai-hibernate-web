@@ -14,12 +14,13 @@ export class LocalStorageBasedUserConfigManager implements UserConfigManager {
 	}
 
 	isConfigured(): boolean {
-		return this.getBackendAddress().trim().length > 0;
+		return window.localStorage.getItem(this.CONFIGURATION_MARK) != null;
 	}
 
 	markConfigured() {
-		// NOP
+		window.localStorage.setItem(this.CONFIGURATION_MARK, '1');
 	}
 
 	private readonly BACKEND_ADDRESS_KEY = 'backendAddress';
+	private readonly CONFIGURATION_MARK = 'configured';
 }

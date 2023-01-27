@@ -1,12 +1,16 @@
 import {
-	BotFilterOptions, DirectMessageFilterOptions, GroupMessageFilterOptions,
+	BotFilterOptions,
+	DirectMessageFilterOptions,
+	GroupMessageFilterOptions,
 	isBotFilterOptions,
 	isDirectMessageFilterOptions,
 	isGroupMessageFilterOptions,
-	isKindFilterOptions, isTemporaryMessageFilterOptions,
+	isKindFilterOptions,
+	isTemporaryMessageFilterOptions,
 	KindFilterOptions,
 	MessageFilterOptions,
-	MessageRecord, TemporaryMessageFilterOptions,
+	MessageRecord,
+	TemporaryMessageFilterOptions,
 } from '../types';
 
 async function fetchMessage(url: string): Promise<Array<MessageRecord>> {
@@ -62,6 +66,10 @@ export async function fetchMessages(filter: MessageFilterOptions): Promise<Array
 
 export async function fetchBotList(): Promise<Array<number>> {
 	const response = await fetch('/archive/bot');
+	const data = await response.json();
+	if (data.code !== 0) {
+		return [];
+	}
 
-	return [];
+	return (data.data as number[]);
 }

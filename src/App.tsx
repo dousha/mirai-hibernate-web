@@ -7,6 +7,7 @@ import './index.css';
 import UserConfigContext from './components/context/UserConfigContext';
 import UserConfigManager from './logic/UserConfigManager';
 import ConfigPage from './pages/ConfigPage';
+import MessageLogPage from './pages/MessageLogPage';
 
 function App() {
 	return (
@@ -16,6 +17,7 @@ function App() {
 					<Routes>
 						<Route path={'/'} element={<LandingPage/>}/>
 						<Route path={'/config'} element={<ConfigPage/>}/>
+						<Route path={'/log/:botId'} element={<MessageLogPage/>}/>
 					</Routes>
 				</div>
 			</MiraiClientContext.Provider>

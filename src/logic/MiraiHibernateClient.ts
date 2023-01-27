@@ -3,11 +3,12 @@ import env from 'react-dotenv';
 import { MockMiraiHibernateClient } from './client/MockMiraiHibernateClient';
 import { RealMiraiHibernateClient } from './client/RealMiraiHibernateClient';
 import AccountInfo from './model/AccountInfo';
+import { GroupInfo } from './model/GroupInfo';
 
 export interface MiraiHibernateClient {
     fetchBots(): Promise<Array<AccountInfo>>;
 
-    fetchGroups(bot: number): Promise<Array<number>>;
+    fetchGroups(bot: number): Promise<Array<GroupInfo>>;
 
     fetchUsers(bot: number): Promise<Array<AccountInfo>>;
 
