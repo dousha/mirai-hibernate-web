@@ -1,30 +1,31 @@
 import { MessageRecord } from '../types';
-import { Avatar, Card, CardContent, Grid} from '@mui/material';
+import { Avatar, Card, CardContent, Grid } from '@mui/material';
 import * as React from 'react';
 import './Component.css';
 import MessageChain from './parts/MessageChain';
 import UserId from './parts/chat/UserId';
 import LocaleTime from './parts/chat/LocaleTime';
+import { randomString } from '../util/StringUtil';
 
 export default function MessageEntry(message: MessageRecord) {
+	const messageId: string = message.ids == null ? randomString() : message.ids;
 	return (
-		<Card sx={{marginBottom: '0.5em'}} id={message.id.toString()}>
+		<Card sx={{marginBottom: '0.5em'}} id={messageId}>
 			<CardContent>
 				<Grid container spacing={2}>
-					<Grid item xs={1}>
-						<Avatar sx={{width: "100%", height: "auto"}}
-								src={`https://q.qlogo.cn/g?b=qq&nk=${message.fromId}&s=640`} />
+					<Grid item>
+						<Avatar src={`https://q.qlogo.cn/g?b=qq&nk=${message.fromId}&s=640`}/>
 					</Grid>
-					<Grid item xs={11}>
+					<Grid item xs>
 						<Grid container direction={'column'}>
 							<Grid item>
 								<Grid container direction={'row'}>
 									<Grid item>
-										<UserId id={message.fromId.toString()} />
+										<UserId id={message.fromId.toString()}/>
 									</Grid>
 									<Grid item flexGrow={1}></Grid>
 									<Grid item>
-										<LocaleTime timestamp={message.time} />
+										<LocaleTime timestamp={message.time}/>
 									</Grid>
 								</Grid>
 							</Grid>

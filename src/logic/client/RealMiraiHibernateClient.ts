@@ -1,20 +1,23 @@
 import { MiraiHibernateClient } from '../MiraiHibernateClient';
-import { MessageFilterOptions, MessageRecord } from '../../types';
+import {
+	BotFilterOptions,
+	DirectMessageFilterOptions,
+	GroupMessageFilterOptions,
+	isBotFilterOptions,
+	isDirectMessageFilterOptions,
+	isGroupMessageFilterOptions,
+	isKindFilterOptions,
+	isTemporaryMessageFilterOptions,
+	KindFilterOptions,
+	MessageFilterOptions,
+	MessageRecord,
+	TemporaryMessageFilterOptions,
+} from '../../types';
 import AccountInfo from '../model/AccountInfo';
 import UserConfigManager from '../UserConfigManager';
 import { GroupInfo } from '../model/GroupInfo';
 
 export class RealMiraiHibernateClient implements MiraiHibernateClient {
-	private async fetchData(url: string): Promise<any> {
-		const response = await fetch(url);
-		const data = await response.json();
-		if (data.code !== 0) {
-			throw new Error(data);
-		}
-
-		return data.data;
-	}
-
 	addTagToSticker(stickerHash: string, tag: string): Promise<null> {
 		return Promise.resolve(null);
 	}
@@ -52,8 +55,29 @@ export class RealMiraiHibernateClient implements MiraiHibernateClient {
 		}
 	}
 
-	fetchMessages(filter: MessageFilterOptions): Promise<Array<MessageRecord>> {
-		return Promise.resolve([]);
+	async fetchMessages(filter: MessageFilterOptions): Promise<Array<MessageRecord>> {
+		if (isKindFilterOptions(filter)) {
+			return this.fetchMessagesByKind(filter);
+		}
+
+		if (isTemporaryMessageFilterOptions(filter)) {
+			return this.fetchMessagesByTemporarySession(filter);
+		}
+
+		if (isGroupMessageFilterOptions(filter)) {
+			return this.fetchMessagesByGroup(filter);
+		}
+
+		if (isDirectMessageFilterOptions(filter)) {
+			return this.fetchMessagesByFriend(filter);
+		}
+
+		if (isBotFilterOptions(filter)) {
+			return this.fetchMessagesByBot(filter);
+		}
+
+		console.error('filter does not match any');
+		return [];
 	}
 
 	fetchRandomSticker(): Promise<string> {
@@ -86,5 +110,40 @@ export class RealMiraiHibernateClient implements MiraiHibernateClient {
 
 	removeTagFromSticker(stickerHash: string, tag: string): Promise<null> {
 		return Promise.resolve(null);
+	}
+
+	private async fetchData(url: string): Promise<any> {
+		const response = await fetch(url);
+		const data = await response.json();
+		if (data.code !== 0) {
+			throw new Error(data);
+		}
+
+		return data.data;
+	}
+
+	private async fetchMessage(url: string): Promise<Array<MessageRecord>> {
+		const data = await this.fetchData(url);
+		return data as MessageRecord[];
+	}
+
+	private async fetchMessagesByKind(filter: KindFilterOptions): Promise<Array<MessageRecord>> {
+		return this.fetchMessage(`${UserConfigManager.getBackendAddress()}/message/kind?kind=${filter.kind}&start=${filter.from}&end=${filter.to}`);
+	}
+
+	private async fetchMessagesByBot(filter: BotFilterOptions): Promise<Array<MessageRecord>> {
+		return this.fetchMessage(`${UserConfigManager.getBackendAddress()}/message/bot?bot=${filter.bot}&start=${filter.from}&end=${filter.to}`);
+	}
+
+	private async fetchMessagesByGroup(filter: GroupMessageFilterOptions): Promise<Array<MessageRecord>> {
+		return this.fetchMessage(`${UserConfigManager.getBackendAddress()}/message/group?bot=${filter.bot}&group=${filter.group}&start=${filter.from}&end=${filter.to}`);
+	}
+
+	private async fetchMessagesByFriend(filter: DirectMessageFilterOptions): Promise<Array<MessageRecord>> {
+		return this.fetchMessage(`${UserConfigManager.getBackendAddress()}/message/group?bot=${filter.bot}&friend=${filter.account}&start=${filter.from}&end=${filter.to}`);
+	}
+
+	private async fetchMessagesByTemporarySession(filter: TemporaryMessageFilterOptions): Promise<Array<MessageRecord>> {
+		return this.fetchMessage(`${UserConfigManager.getBackendAddress()}/message/member?bot=${filter.bot}&group=${filter.group}&member=${filter.account}&start=${filter.from}&end=${filter.to}`);
 	}
 }

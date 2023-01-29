@@ -5,12 +5,11 @@ import {
 	List,
 	ListItem,
 	ListItemAvatar,
+	ListItemButton,
 	ListItemText,
-	Paper,
 	Skeleton,
-	Typography,
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { getAvatarImagePath, getGroupAvatarImagePath } from '../util/ServerPathUtil';
 import { useEffect, useState } from 'react';
 import { GroupInfo } from '../logic/model/GroupInfo';
@@ -20,6 +19,7 @@ import { useMiraiClient } from '../components/context/MiraiClientContext';
 export default function MessageLogPage(props: any) {
 	const {botId} = useParams();
 	const client = useMiraiClient();
+	const navigate = useNavigate();
 
 	const [loading, setLoading] = useState(true);
 	const [groups, setGroups] = useState<GroupInfo[]>([]);
@@ -28,23 +28,27 @@ export default function MessageLogPage(props: any) {
 
 	const generateAccountInfoListItem = function (info: AccountInfo, key: any) {
 		return (<ListItem key={key}>
-			<ListItemAvatar>
-				<Avatar src={getAvatarImagePath(info.id)}>
-					{info.nickname}
-				</Avatar>
-			</ListItemAvatar>
-			<ListItemText primary={info.nickname} secondary={info.id}/>
+			<ListItemButton>
+				<ListItemAvatar>
+					<Avatar src={getAvatarImagePath(info.id)}>
+						{info.nickname}
+					</Avatar>
+				</ListItemAvatar>
+				<ListItemText primary={info.nickname} secondary={info.id}/>
+			</ListItemButton>
 		</ListItem>);
 	};
 
 	const generateGroupInfoListItem = function (info: GroupInfo, key: any) {
 		return (<ListItem key={key}>
-			<ListItemAvatar>
-				<Avatar src={getGroupAvatarImagePath(info.id)}>
-					{info.nickname}
-				</Avatar>
-			</ListItemAvatar>
-			<ListItemText primary={info.nickname} secondary={info.id}/>
+			<ListItemButton onClick={() => navigate(`group/${info.id}`)}>
+				<ListItemAvatar>
+					<Avatar src={getGroupAvatarImagePath(info.id)}>
+						{info.nickname}
+					</Avatar>
+				</ListItemAvatar>
+				<ListItemText primary={info.nickname} secondary={info.id}/>
+			</ListItemButton>
 		</ListItem>);
 	};
 
@@ -75,6 +79,15 @@ export default function MessageLogPage(props: any) {
 				<Skeleton/>
 			</ListItemText>
 		</ListItem>
+		<Divider/>
+		<ListItem>
+			<ListItemAvatar>
+				<Avatar/>
+			</ListItemAvatar>
+			<ListItemText>
+				<Skeleton/>
+			</ListItemText>
+		</ListItem>
 	</>);
 
 	return (<>
@@ -89,12 +102,12 @@ export default function MessageLogPage(props: any) {
 					</ListItem>
 					<Divider/>
 					{loading ? loadingState : groups.map((it, key) => generateGroupInfoListItem(it, key))}
+					<Divider/>
+					{loading ? null : contacts.map((it, key) => generateAccountInfoListItem(it, key))}
 				</List>
 			</Grid>
 			<Grid item xs>
-				<Paper elevation={0}>
-					<Typography>{botId}</Typography>
-				</Paper>
+				<Outlet context={{botId: Number(botId)}}/>
 			</Grid>
 		</Grid>
 	</>);
